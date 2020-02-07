@@ -29,3 +29,16 @@ print(f'El data set tiene {counter} filas y {n_cols} columnas')
 # work the content data to after that convert it to a DatFrame
 df = pd.DataFrame(main_dict)
 # print(df)
+
+infile = f'{mainpath}/customer-churn-model/Customer Churn Model.txt'
+outfile = f'{mainpath}/customer-churn-model/My Customer Churn Model.txt'
+
+with open(infile, 'r') as infiler:
+    with open(outfile, 'w') as outfilew:
+        for line in infiler:
+            fields = line.strip().split(',')
+            outfilew.write('\t'.join(fields))
+            outfilew.write('\n')
+df = pd.read_csv(outfile, sep='\t')
+
+# print(df)
