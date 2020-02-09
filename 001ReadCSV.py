@@ -4,14 +4,16 @@ import os
 mainpath = 'F:/Cursos/Machine Learning/python-ml-course/datasets'
 filename = '/titanic/titanic3.csv'
 
+# Pandas method to read a csv file
 data = pd.read_csv(f'{mainpath}{filename}')
 
+# property that returns the dataset columns in a list
 print(data.columns.values)
 
 
 # Reading a file with open() method
 data = open( f'{mainpath}{filename}', 'r' )
-cols = data.readline().strip().split(',')
+cols = data.readline().strip().split(',') # strip() method without parameters remove left and right whitespaces, it can have a string parameter
 n_cols = len(cols)
 counter = 0
 main_dict = {}

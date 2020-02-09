@@ -8,12 +8,14 @@ medals_data = pd.read_csv(url)
 
 # print(medals_data)
 
+# Code to get data from internet
 http = urllib3.PoolManager()
 r = http.request('GET', url)
 response = r.data
 print(r.status)
 # print(response)
 
+# Method to decode encoded data
 str_data = response.decode('utf-8')
 
 lines = str_data.split('\n')
@@ -23,9 +25,11 @@ n_cols = len(col_names)
 
 counter = 0
 main_dict = {}
+# Adding the keys to the dict
 for col in col_names:
     main_dict[col] = []
 
+# Adding each data to its corresponding in the dict
 for line in lines:
     if(counter > 0):
         values = line.split(',')
@@ -35,6 +39,7 @@ for line in lines:
 
 print(f'El data set tiene {counter} filas y {n_cols} columnas')
 
+# Finally convert the dictionaty to a data frame
 medals_df = pd.DataFrame(main_dict)
 
 mainpath = 'F:/Cursos/Machine Learning/python-ml-course/datasets'
