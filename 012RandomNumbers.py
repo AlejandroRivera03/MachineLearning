@@ -40,3 +40,10 @@ print('column_list = data.columns.values.tolist()')
 print(f'column_list => {column_list}')
 # Getting a random value from column list with choice method
 print(f'np.random.choice(column_list) => {np.random.choice(column_list)}')
+
+# Seed
+# Stablishing a 'Seed' is very important when we want to reproduce
+# an experiment, due to the seed allows us to repeat the random values
+np.random.seed(2018)
+for i in range(5):
+    print(np.random.random())
