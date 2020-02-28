@@ -31,3 +31,25 @@ data = pd.DataFrame(
 )
 
 print(data.head(10))
+
+# Simple grouping by gender (2 groups)
+grouped_gender = data.groupby('Gender')
+
+print(grouped_gender.groups)
+
+for names, groups in grouped_gender:
+    print(names)
+    print(groups)
+
+# Getting a simple group
+print(f'Female group =>\n{grouped_gender.get_group("Female")}')
+
+# Double grouping by gender and economic status (6 groups )
+double_group = data.groupby(['Gender', 'Economic Status'])
+
+for names, groups in double_group:
+    print(names)
+    # print(groups)
+
+# Getting a double grouping group
+print(double_group.get_group(('Male', 'Rich')))
