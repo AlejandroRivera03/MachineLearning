@@ -53,3 +53,37 @@ for names, groups in double_group:
 
 # Getting a double grouping group
 print(double_group.get_group(('Male', 'Rich')))
+
+# Data grouping operations
+# data sum
+print(double_group.sum())
+
+# data mean (media-promedio)
+print(double_group.mean())
+
+# data size
+print(double_group.size())
+
+print(double_group.describe())
+
+grouped_income = double_group['Income']
+print(grouped_income.describe())
+
+print(double_group.aggregate(
+    {
+        'Income': np.sum, # Suma
+        'Age': np.mean, # Media
+        'Height': np.std, # Desviacion estandar
+    }
+))
+
+print(double_group.aggregate(
+    {
+        'Age': np.mean,
+        'Height': lambda h:(np.mean(h))/np.std(h) # tipificacion de la edad
+    }
+))
+
+print(double_group.aggregate([np.sum, np.mean, np.std])) # function(s) to apply to all dataset columns
+
+print(double_group.aggregate([lambda x:np.mean(x) / np.std(x)]))
