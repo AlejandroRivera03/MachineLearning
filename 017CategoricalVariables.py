@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 
 # Categorical variables
 gender = ['Female', 'Male']
@@ -87,3 +88,49 @@ print(double_group.aggregate(
 print(double_group.aggregate([np.sum, np.mean, np.std])) # function(s) to apply to all dataset columns
 
 print(double_group.aggregate([lambda x:np.mean(x) / np.std(x)]))
+
+
+
+
+# Data Filtering
+
+# It returns the age's rows which belong to the data
+# group which accomplish with the filter rule
+print(double_group['Age'].filter(lambda x: x.sum()>2400))
+
+
+
+
+
+# Variables Transformation
+
+zscore = lambda x: (x - x.mean())/x.std()
+z_group = double_group.transform(zscore)
+plt.hist(z_group['Age'])
+plt.show()
+
+
+
+# Other relevant methods
+
+# filling NA's with the mean
+fill_na_mean = lambda x: x.fillna(x.mean())
+double_group.transform(fill_na_mean)
+
+# It returns each groups' first element
+print(double_group.head(1))
+
+# It returns each groups' last element
+print(double_group.tail(1))
+
+# It returns each groups' indicated element
+print(double_group.nth(40))
+
+# Sorting first by Age and after by Income
+# after that, group data by gender
+# print each groups' youngest (female and male)
+# print each groups' oldest (female and male)
+data_sorted = data.sort_values(['Age', 'Income'])
+age_grouped = data_sorted.groupby('Gender')
+print(age_grouped.head(1))
+print(age_grouped.tail(1))
