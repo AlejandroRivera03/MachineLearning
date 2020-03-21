@@ -98,3 +98,9 @@ plt.plot(data['x'], y_mean, 'g')
 plt.plot(data['x'], data['y_model'])
 plt.title('Valor Actual vs Predicción')
 plt.show()
+
+# RSE Error Estandar Residual
+# RSE: Cuanto menor sea, mejor es el modelo
+RSE = np.sqrt(SSD/(len(data)-2))
+print(f'RSE = SSD/n-2  =>  {RSE}')
+print(f'Porcentaje de error  =>  {RSE/np.mean(data["y_actual"])}')
