@@ -31,7 +31,7 @@ lm.fit(X,Y)
 print(f'Constante => {lm.intercept_}')
 print(f'Variables => {lm.coef_}')
 
-print(f'\n{list(zip(feature_cols, lm.coef_))}')
+print(f'\n{list(zip(feature_cols, lm.coef_))}') # Predictor Variables Before Simplifying
 
 print(f'\nR^2 => {lm.score(X,Y)}')
 
@@ -50,3 +50,26 @@ print(f'SSD => {SSD}')
 print(f'RSE => {RSE}')
 print(f'sales_mean => {sales_mean}')
 print(f'error => {error*100}%')
+
+# Eliminando variables dummy redundantes
+
+dummy_gender = pd.get_dummies(df['Gender'], prefix='Gender').iloc[:,1:] # Only the Gender_male column
+dummy_city_tier = pd.get_dummies(df['City Tier'], prefix='City').iloc[:,1:] # The City_Tier 2 and City_Tier 3 columns
+print(dummy_gender.head())
+print(dummy_city_tier.head())
+
+column_names = df.columns.values.tolist()
+df_new = df[column_names].join(dummy_gender)
+column_names = df_new.columns.values.tolist()
+df_new = df_new[column_names].join(dummy_city_tier)
+print(df_new.head())
+
+feature_cols = ['Monthly Income', 'Transaction Time', 'Gender_Male', 'City_Tier 2', 'City_Tier 3', 'Record']
+X = df_new[feature_cols]
+Y = df_new['Total Spend']
+lm = LinearRegression()
+lm.fit(X,Y)
+
+print(f'Constante => {lm.intercept_}')
+print(list(zip(feature_cols, lm.coef_))) # Predictor Variables After Simplifying
+print(f'R^2 => {lm.score(X,Y)}')
