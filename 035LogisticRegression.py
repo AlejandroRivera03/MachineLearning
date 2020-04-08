@@ -1,6 +1,9 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from sklearn import datasets
+from sklearn.feature_selection import RFE
+from sklearn.linear_model import LogisticRegression
 
 data = pd.read_csv('./datasets/Bank/bank.csv', sep=';')
 
@@ -102,3 +105,46 @@ plt.show()
 # Quien gana en inversion, normalmente vuelve a invertir
 pd.crosstab(data.poutcome, data.y).plot(kind='bar')
 plt.show()
+
+# Changing categorical variables to dummy
+categories = ['job', 'marital', 'education', 'housing', 'loan', 'contact', 'month', 'day_of_week', 'poutcome']
+
+for category in categories:
+    cat_list = f'cat_{category}'
+    cat_dummies = pd.get_dummies(data[category], prefix=category)
+    data_new = data.join(cat_dummies)
+    data = data_new
+
+# Removing categorical variables and keeping dummies
+data_vars = data.columns.values.tolist()
+to_keep = [v for v in data_vars if v not in categories]
+to_keep = [v for v in to_keep if v not in ['default']]
+
+bank_data = data[to_keep]
+
+
+# Building model
+bank_data_vars = bank_data.columns.values.tolist()
+# print(bank_data_vars)
+Y = ['y']
+X = [v for v in bank_data_vars if v not in Y]
+
+n = 12
+lr = LogisticRegression()
+rfe = RFE(lr, n)
+rfe = rfe.fit(bank_data[X], bank_data[Y].values.ravel())
+
+# print(rfe.support_)
+
+# print(rfe.ranking_)
+
+z = list(zip(bank_data_vars, rfe.support_, rfe.ranking_))
+print(z) # variables that the method recommends to use to build the model (Trues and lower numbers)
+
+
+
+# columns that the last print recommends to use in the logistic model
+cols = [recommendation[0] for recommendation in z if recommendation[1]]
+
+X = bank_data[cols]
+Y = bank_data['y']
