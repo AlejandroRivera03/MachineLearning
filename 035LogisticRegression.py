@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from sklearn import datasets
 from sklearn.feature_selection import RFE
 from sklearn.linear_model import LogisticRegression
+import statsmodels.api as sm
 
 data = pd.read_csv('./datasets/Bank/bank.csv', sep=';')
 
@@ -148,3 +149,16 @@ cols = [recommendation[0] for recommendation in z if recommendation[1]]
 
 X = bank_data[cols]
 Y = bank_data['y']
+
+logit_model = sm.Logit(Y, X)
+result = logit_model.fit()
+
+# P-Valor => the lower value, the more important is (ex. job_student, job_technician, day_of_week_wed aren't good option)
+print(result.summary2())
+
+logit_model = LogisticRegression()
+logit_model.fit(X,Y)
+print(logit_model.score(X,Y))
+
+
+print(pd.DataFrame(list(zip(X.columns, np.transpose(logit_model.coef_)))))
