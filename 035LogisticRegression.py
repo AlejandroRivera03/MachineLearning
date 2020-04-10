@@ -1,10 +1,11 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn import datasets
+from sklearn import datasets, metrics
 from sklearn.feature_selection import RFE
 from sklearn.linear_model import LogisticRegression
 import statsmodels.api as sm
+from sklearn.model_selection import train_test_split
 
 data = pd.read_csv('./datasets/Bank/bank.csv', sep=';')
 
@@ -162,3 +163,28 @@ print(logit_model.score(X,Y))
 
 
 print(pd.DataFrame(list(zip(X.columns, np.transpose(logit_model.coef_)))))
+
+# LOGISTIC MODEL VALIDATION
+
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.3, random_state=0)
+# Making a logistic model with train data
+lm = LogisticRegression()
+lm.fit(X_train, Y_train)
+probs = lm.predict_proba(X_test)
+print('\nLeft => security, Right => les tha 0.5 no, more that 0.5 yes')
+print(probs)
+
+prediction = lm.predict(X_test)
+print(f'\n{prediction}')
+
+prob = probs[:,1]
+prob_df = pd.DataFrame(prob)
+threshol = 0.1
+prob_df['prediction'] = np.where(prob_df[0] > threshol, 1, 0)
+print(prob_df.head())
+
+print(pd.crosstab(prob_df.prediction, columns='count'))
+
+# 390 / len(prob_df)
+
+print(metrics.accuracy_score(Y_test, prediction))
