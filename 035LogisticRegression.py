@@ -197,3 +197,80 @@ scores = cross_val_score(LogisticRegression(), X, Y, cv=10, scoring='accuracy')
 
 print(f'\nScores => \n{scores}')
 print(f'\nScores mean => \n{scores.mean()}')
+
+# Matrices de confucion
+
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.3, random_state=0)
+lm = LogisticRegression()
+lm.fit(X_train, Y_train)
+probs = lm.predict_proba(X_test)
+prob = probs[:,1]
+prob_df = pd.DataFrame(prob)
+threshol = 0.1
+prob_df['prediction'] = np.where(prob_df[0]>threshol, 1, 0)
+prob_df['actual'] = list(Y_test)
+print(f'\n{prob_df.head()}')
+confusion_matrix = pd.crosstab(prob_df.prediction, prob_df.actual)
+print(f'\n{confusion_matrix}')
+
+TN = confusion_matrix[0][0] # Verdaderos negativos
+TP = confusion_matrix[1][1] # Verdaderos positivos
+FP = confusion_matrix[0][1] # Falsos negativos
+FN = confusion_matrix[1][0] # Falsos positivos
+
+sens = TP / (TP+FN)
+print(f'\nSensibilidad => {sens}')
+
+espc_1 = 1-TN/(TN+FP)
+print(f'\nEspecifidad => {espc_1}')
+
+# Curvas ROC (Manual)
+
+thresholds = [0.04, 0.05, 0.07, 0.1, 0.12, 0.15, 0.18, 0.20, 0.25, 0.3, 0.4, 0.5]
+sensitivities = [1]
+especifities_1 = [1]
+
+for t in thresholds:
+    prob_df['prediction'] = np.where(prob_df[0]>=t, 1, 0)
+    prob_df['actual'] = list(Y_test)
+
+    confusion_matrix = pd.crosstab(prob_df.prediction, prob_df.actual)
+    TN = confusion_matrix[0][0]
+    TP = confusion_matrix[1][1]
+    FP = confusion_matrix[0][1]
+    FN = confusion_matrix[1][0]
+
+
+    sens = TP/(TP+FN)
+    sensitivities.append(sens)
+    espc_1 = 1-TN/(TN+FP)
+    especifities_1.append(espc_1)
+
+sensitivities.append(0)
+especifities_1.append(0)
+print(f'\nSensibilidades => {sensitivities}')
+print(f'\nEspeficidades => {especifities_1}')
+
+plt.plot(especifities_1, sensitivities, marker='o', linestyle='--', color='r')
+x=[i*0.01 for i in range(100)]
+y=[i*0.01 for i in range(100)]
+plt.plot(x, y)
+plt.xlabel('1-Especifidad')
+plt.ylabel('Sensibilidad')
+plt.title('Curva ROC')
+plt.show()
+
+# Curvas ROC (Library)
+
+espc_1, sensit, _ = metrics.roc_curve(Y_test, prob)
+
+df = pd.DataFrame({
+    'esp': espc_1,
+    'sens': sensit,
+})
+
+plt.plot(df.esp, df.sens)
+plt.show()
+
+auc = metrics.auc(espc_1, sensit)
+print(f'\nArea under curve => {auc}')
