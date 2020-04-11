@@ -5,7 +5,7 @@ from sklearn import datasets, metrics
 from sklearn.feature_selection import RFE
 from sklearn.linear_model import LogisticRegression
 import statsmodels.api as sm
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, cross_val_score
 
 data = pd.read_csv('./datasets/Bank/bank.csv', sep=';')
 
@@ -188,3 +188,12 @@ print(pd.crosstab(prob_df.prediction, columns='count'))
 # 390 / len(prob_df)
 
 print(metrics.accuracy_score(Y_test, prediction))
+
+
+# CROSS VALIDATION
+
+# K-Iteraciones (10 in this example)
+scores = cross_val_score(LogisticRegression(), X, Y, cv=10, scoring='accuracy')
+
+print(f'\nScores => \n{scores}')
+print(f'\nScores mean => \n{scores.mean()}')
