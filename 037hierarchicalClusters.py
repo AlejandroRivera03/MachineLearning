@@ -82,3 +82,52 @@ def dendrogram_tune(*args, **kwargs):
 # The other properties are dendrogram parameters
 dendrogram_tune(Z, truncate_mode='lastp', p=12, leaf_rotation=90.0, leaf_font_size=12.0, show_contracted=True, annotate_above=15, max_d=20)
 plt.show()
+
+
+# Elbow method
+
+last = Z[-10:, 2] # Obteniendo las distancias de las ultimas diez uniones
+last_rev = last[::-1] # Revertimos el orden de las distancias
+print(last_rev)
+idx = np.arange(1, len(last)+1)
+plt.plot(idx, last_rev)
+
+acc = np.diff(last, 2)
+acc_rev = acc[::-1]
+plt.plot(idx[:-2]+1, acc_rev)
+plt.show() # Identify the elbow
+k = acc_rev.argmax() + 2
+print(f'El numero optimo de clusters es {k}')
+
+c = np.random.multivariate_normal([40,40], [[20,1],[1,30]], size=[200,])
+d = np.random.multivariate_normal([80,80], [[30,1],[1,30]], size=[200,])
+e = np.random.multivariate_normal([0,100], [[100,1],[1,100]], size=[200,])
+X2 = np.concatenate((X,c,d,e),)
+plt.scatter(X2[:,0], X2[:,1])
+plt.show()
+
+Z2 = linkage(X2, 'ward')
+plt.figure(figsize=(10,9))
+dendrogram_tune(
+    Z2,
+    truncate_mode='lastp',
+    p=30,
+    leaf_rotation=90.0,
+    leaf_font_size=10.0,
+    show_contracted=True,
+    annotate_above=40,
+    max_d=170
+)
+plt.show()
+
+last = Z2[-10:,2]
+last_rev = last[::-1]
+idx = np.arange(1, len(last)+1)
+plt.plot(idx, last_rev)
+
+acc = np.diff(last, 2)
+acc_rev = acc[::-1]
+plt.plot(idx[:-2]+1, acc_rev)
+plt.show()
+k = acc_rev.argmax() + 2
+print(f'El numero optimo de clusters es {k}')
