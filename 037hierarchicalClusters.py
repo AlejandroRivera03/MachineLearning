@@ -5,7 +5,7 @@
 # k => numero de clusters
 
 import matplotlib.pyplot as plt
-from scipy.cluster.hierarchy import dendrogram, linkage, cophenet
+from scipy.cluster.hierarchy import dendrogram, linkage, cophenet, fcluster
 from scipy.spatial.distance import pdist
 import numpy as np
 
@@ -131,3 +131,20 @@ plt.plot(idx[:-2]+1, acc_rev)
 plt.show()
 k = acc_rev.argmax() + 2
 print(f'El numero optimo de clusters es {k}')
+
+# FINAL CLUSTER (example with X2 with distance criteria in 170)
+
+max_d = 20
+clusters = fcluster(Z, max_d, criterion='distance')
+# print(clusters)
+
+k = 3 # Use elbow method to know k
+clusters = fcluster(Z, k, criterion='maxclust')
+
+clusters = fcluster(Z, 8, depth=10)
+
+max_d=170
+clusters = fcluster(Z2, max_d, criterion='distance')
+plt.figure(figsize=(9,9))
+plt.scatter(X2[:,0], X2[:,1], c=clusters, cmap='prism')
+plt.show()
