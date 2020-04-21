@@ -94,3 +94,17 @@ for k in K:
                 c=color_palette[k-1],
                 marker='x')
     plt.show()
+
+# Representacion del codo
+plt.plot(K, ssw, 'bx-')
+plt.xlabel('k')
+plt.ylabel('SSw(k)')
+plt.title('La tecnica del codo para encontrar el k optimo')
+plt.show()
+
+# Representacion del codo normalizado
+plt.plot(K, 1-ssw/sst, 'bx-')
+plt.xlabel('k')
+plt.ylabel('1-norm(SSw(k))')
+plt.title('La tecnica del codo normalizado para encontrar el k optimo')
+plt.show()
