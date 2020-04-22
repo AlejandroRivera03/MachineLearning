@@ -54,3 +54,12 @@ plt.show()
 #               No: ¿Los datos son linealmente separables?
 #                   Si: Clustering aglomerativo (dendrograma)
 #                   No: Clustering espectral
+
+
+# SECTION REVIEW (Clustering)
+
+# Clustering es un algoritmo no supervisado que junta puntos similares
+# La distacia entre observaciones es un criterio para hacer agrupaciones y se representan en forma de matriz de distancias n*n
+# El clustering jerarquico aglomerativo empieza con n clusters individuales y los va juntando en base a enlaces con la matriz de distancias
+# K-Means es un algoritmo muy utilizado para crear k clusters conocido el valor de k o k centros iniciales
+# Decidir el numero de clusters es importante y podemos usar la silueta o el codo
