@@ -1,3 +1,7 @@
 python-ml-course/
 datasets/
+resources/
 *.jpg
+*.dot
+*.pdf
+*.gv

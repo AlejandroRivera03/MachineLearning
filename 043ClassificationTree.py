@@ -1,7 +1,11 @@
 import numpy as np
+import os
 import pandas as pd
 import matplotlib.pyplot as plt
-from sklearn.tree import DecisionTreeClassifier
+from graphviz import Source
+import graphviz as gp
+from sklearn.tree import DecisionTreeClassifier, export_graphviz
+os.environ["PATH"] += os.pathsep + 'F:/Archivos de programa/Graphviz2.38/bin'
 
 data = pd.read_csv('./datasets/iris/iris.csv')
 
@@ -25,3 +29,12 @@ tree.fit(train[predictors], train[target])
 
 preds = tree.predict(test[predictors])
 print(pd.crosstab(test[target], preds, rownames=['Actual'], colnames=['Predictions']))
+
+with open('resources/iris_dtree.dot', 'w') as dotfile:
+    export_graphviz(tree, out_file=dotfile, feature_names=predictors)
+    dotfile.close()
+
+file = open('resources/iris_dtree.dot', 'r')
+text = file.read()
+
+Source(text, filename='resources/iris_dtree').view()
