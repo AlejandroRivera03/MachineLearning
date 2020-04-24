@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from graphviz import Source
 import graphviz as gp
 from sklearn.tree import DecisionTreeClassifier, export_graphviz
+from sklearn.model_selection import KFold, cross_val_score
 os.environ["PATH"] += os.pathsep + 'F:/Archivos de programa/Graphviz2.38/bin'
 
 data = pd.read_csv('./datasets/iris/iris.csv')
@@ -24,6 +25,8 @@ data['is_train'] = np.random.uniform(0, 1, len(data))<=0.75
 
 train, test = data[data['is_train'] == True], data[data['is_train'] == False]
 
+# VISUALIZACION DEL ARBOL DE DECISION
+
 tree = DecisionTreeClassifier(criterion='entropy', min_samples_split=20, random_state=99)
 tree.fit(train[predictors], train[target])
 
@@ -38,3 +41,16 @@ file = open('resources/iris_dtree.dot', 'r')
 text = file.read()
 
 Source(text, filename='resources/iris_dtree').view()
+
+# CROSS VALIDATION PARA LA PODA
+
+X = data[predictors]
+Y = data[target]
+
+for i in range(1,11):
+    tree = DecisionTreeClassifier(criterion='entropy', max_depth=i, min_samples_split=20, random_state=99)
+    tree.fit(X,Y)
+    cv = KFold(n_splits=10, shuffle=True, random_state=1) # n=X.shape[0], 
+    scores = cross_val_score(tree, X, Y, scoring='accuracy', cv=cv, n_jobs=1)
+    score = np.mean(scores)
+    print(f'Score para i = {i} => {score}\n\t{tree.feature_importances_}')
