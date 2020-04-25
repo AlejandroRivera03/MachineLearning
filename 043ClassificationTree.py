@@ -6,6 +6,7 @@ from graphviz import Source
 import graphviz as gp
 from sklearn.tree import DecisionTreeClassifier, export_graphviz
 from sklearn.model_selection import KFold, cross_val_score
+from sklearn.ensemble import RandomForestClassifier
 os.environ["PATH"] += os.pathsep + 'F:/Archivos de programa/Graphviz2.38/bin'
 
 data = pd.read_csv('./datasets/iris/iris.csv')
@@ -54,3 +55,10 @@ for i in range(1,11):
     scores = cross_val_score(tree, X, Y, scoring='accuracy', cv=cv, n_jobs=1)
     score = np.mean(scores)
     print(f'Score para i = {i} => {score}\n\t{tree.feature_importances_}')
+
+forest = RandomForestClassifier(n_jobs=2, oob_score=True, n_estimators=100)
+forest.fit(X,Y)
+
+# print(forest.oob_decision_function_) # Classification
+
+print(forest.oob_score_) # Precision del modelo
