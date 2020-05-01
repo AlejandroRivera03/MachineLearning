@@ -26,3 +26,17 @@ print(f'Prediction of {point_to_predict} is => {classifier.predict(point_to_pred
 
 point_to_predict = np.array([10.32, 12.67]).reshape(1,2) # It needs this format
 print(f'Prediction of {point_to_predict} is => {classifier.predict(point_to_predict)}')
+
+# Modelo: w0.x + w1.y + e = 0
+# Ecuacion del hiperplano en 2D: y = a.x + b
+
+w = classifier.coef_[0]
+a = -w[0]/w[1]
+b = -classifier.intercept_[0]/w[1]
+xx = np.linspace(0,10)
+yy = a * xx + b
+
+plt.plot(xx, yy, 'k-', label='Hiperplano de separacion')
+plt.scatter(X,Y, c=target)
+plt.legend()
+plt.show()
