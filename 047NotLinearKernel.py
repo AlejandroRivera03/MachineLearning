@@ -51,3 +51,13 @@ plt.show()
 
 plt_3D(X=X, Y=Y, r=r)
 plt.show()
+
+# Radial Basis Function (rfb)
+
+rbf = SVC(kernel='rbf', C=1E6)
+rbf.fit(X,Y)
+
+plt.scatter(X[:,0], X[:,1], c=Y, s=50, cmap='autumn')
+plt_svc(rbf)
+plt.scatter(rbf.support_vectors_[:,0], rbf.support_vectors_[:,1], s=300, lw=1)
+plt.show()
