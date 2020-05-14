@@ -35,3 +35,17 @@ clf.fit(X_train, Y_train)
 
 accuracy = clf.score(X_test, Y_test)
 print(f'Accuracy with data cleaning => {accuracy}')
+
+# Classifying new data
+sample_measure1 = np.array([4,2,1,1,1,2,3,2,1]).reshape(1,-1)
+sample_measure2 = np.array([5,10,10,3,7,3,8,10,2]).reshape(1,-1)
+sample_measure3 = np.array([2,2,4,4,2,2,6,2,4]).reshape(1,-1)
+
+predict = clf.predict(sample_measure1)
+print(f'sample_measure1 => {predict} ({"Maligno" if predict[0] == 4 else "No Maligno"}). data => {sample_measure1}')
+predict = clf.predict(sample_measure2)
+print(f'sample_measure2 => {predict} ({"Maligno" if predict[0] == 4 else "No Maligno"}). data => {sample_measure2}')
+predict = clf.predict(sample_measure3)
+print(f'sample_measure3 => {predict} ({"Maligno" if predict[0] == 4 else "No Maligno"}). data => {sample_measure3}')
+# 2 = No maligno
+# 4 = Maligno
