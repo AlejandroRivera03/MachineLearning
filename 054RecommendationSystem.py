@@ -1,6 +1,10 @@
+import sklearn
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from sklearn.metrics import mean_squared_error
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import NearestNeighbors
 
 df = pd.read_csv('./datasets/ml-100k/u.data.csv', sep='\t', header=None)
 
@@ -39,3 +43,56 @@ sparsity = float(len(ratings.nonzero()[0]))
 sparsity /= (ratings.shape[0]*ratings.shape[1])
 sparsity *= 100
 print('Coeficiente de sparseidad: {:4.2f}%'.format(sparsity))
+
+# Creating training and validation sets
+
+ratings_train, ratings_test = train_test_split(ratings, test_size=0.3, random_state=42)
+print(f'ratings_train.shape => {ratings_train.shape}\nratings_test.shape => {ratings_test.shape}')
+
+# Filtro colaborativo basado en Usuarios
+# 1 - Matriz de similaridad entre los usuarios (distancia del coseno)
+# 2 - Predecir la valoracion desconocida de un item 'i' para un usuario activo 'u' basandonos en la suma ponderada de todas las valoraciones del resto de usuarios para dicho item
+# 3 - Recomendaremos los nuevos items a los usuarios segun lo establecido en los pasos anteriores
+
+# usando la ditancia del coseno, nos devolvera que los 0 son los mas parecidos y los 1 los menos 
+# parecidos, revertiremos esto a los 0 los menos parecidos y los 1 los mas parecidos
+# 1
+sim_matrix = 1 - sklearn.metrics.pairwise.cosine_distances(ratings_train)
+print(f'sim_matrix.shape => {sim_matrix.shape}') # train users versus themselves
+
+# print(sim_matrix)
+
+users_predictions = sim_matrix.dot(ratings_train) / np.array([np.abs(sim_matrix).sum(axis=1)]).T
+# print(users_predictions)
+
+# Error cuadratico medio
+def get_mse(preds, actuals):
+    preds = preds[actuals.nonzero()].flatten()
+    actuals = actuals[actuals.nonzero()].flatten()
+    return mean_squared_error(preds, actuals)
+
+print(get_mse(users_predictions, ratings_train))
+
+print(get_mse(users_predictions, ratings_test))
+
+# Filtro colaborativo basado en KNN
+
+k = 10
+neighbors = NearestNeighbors(k, 'cosine')
+neighbors.fit(ratings_train)
+
+top_k_distances, top_k_users = neighbors.kneighbors(ratings_train, return_distance=True)
+
+print(f'top_k_distances.shape => {top_k_distances.shape}')
+print(f'top_k_distances[0] => {top_k_distances[0]}')
+print(f'top_k_users.shape => {top_k_users.shape}')
+print(f'top_k_users[0] => {top_k_users[0]}')
+
+users_predicts_k = np.zeros(ratings_train.shape)
+for i in range(ratings_train.shape[0]): # Para cada usuario del conjunto de entrenamiento
+    users_predicts_k[i,:] = top_k_distances[i].T.dot(ratings_train[top_k_users][i]) / np.array([np.abs(top_k_distances[i].T).sum(axis=0)]).T
+
+print(f'users_predicts_k.shape => {users_predicts_k.shape}')
+print(f'users_predicts_k => {users_predicts_k}')
+
+print(get_mse(users_predicts_k, ratings_train))
