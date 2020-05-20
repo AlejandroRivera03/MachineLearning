@@ -96,3 +96,21 @@ print(f'users_predicts_k.shape => {users_predicts_k.shape}')
 print(f'users_predicts_k => {users_predicts_k}')
 
 print(get_mse(users_predicts_k, ratings_train))
+
+# Filtrado colaborativo basado en Items
+
+n_movies = ratings_train.shape[1]
+
+neighbors = NearestNeighbors(n_movies, 'cosine')
+neighbors.fit(ratings_train.T)
+
+top_k_distances, top_k_items = neighbors.kneighbors(ratings_train.T, return_distance=True)
+print(f'top_k_distances.shape => {top_k_distances.shape}')
+print(f'top_k_items.shape => {top_k_items.shape}')
+
+print(top_k_items)
+
+item_preds = ratings_train.dot(top_k_distances) / np.array([np.abs(top_k_distances).sum(axis=1)])
+
+print(get_mse(item_preds, ratings_train))
+print(get_mse(item_preds, ratings_test))
