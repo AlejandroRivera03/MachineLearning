@@ -114,3 +114,20 @@ item_preds = ratings_train.dot(top_k_distances) / np.array([np.abs(top_k_distanc
 
 print(get_mse(item_preds, ratings_train))
 print(get_mse(item_preds, ratings_test))
+
+# Filtrado colaborativo basado en KNN
+
+k = 30
+neighbors = NearestNeighbors(k, 'cosine')
+neighbors.fit(ratings_train.T)
+top_k_distances, top_k_items = neighbors.kneighbors(ratings_train.T, return_distance=True)
+
+# print(top_k_distances[0]) Example first movie and its most similar movies (ids)
+# print(top_k_distances[0]) Example first movie and its most similar movies (distances)
+
+preds = np.zeros(ratings_train.T.shape)
+for i in range(ratings.T.shape[0]):
+    preds[i, :] = top_k_distances[i].dot(ratings_train.T[top_k_items][i]) / np.array([np.abs(top_k_distances[i]).sum(axis=0)]).T
+
+print(f'Error cuadrado medio de ratings_train => {get_mse(preds, ratings_train.T)}')
+print(f'Error cuadrado medio de ratings_test => {get_mse(preds, ratings_test.T)}')
