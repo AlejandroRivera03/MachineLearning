@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 import plotly as py
 import plotly.tools as tls
+import matplotlib.pyplot as plt
 import plotly.graph_objects as ir
 from sklearn.preprocessing import StandardScaler
 
@@ -95,3 +96,35 @@ u,s,v = np.linalg.svd(X_std.T)
 print(f'u =>\n{u}')
 print(f's =>\n{s}')
 print(f'v =>\n{v}')
+
+# Point 3
+for ev in eig_vectors:
+    print(f'La longitud del VP es: {np.linalg.norm(ev)}')
+
+eigen_pairs = [(np.abs(eig_vals[i]), eig_vectors[:i]) for i in range(len(eig_vals))]
+eigen_pairs.sort()
+eigen_pairs.reverse()
+print(f'eigen_pairs =>\n{eigen_pairs}')
+
+print('Valores propis en orden descendente:')
+for ep in eigen_pairs:
+    print(ep[0])
+
+total_sum = sum(eig_vals)
+var_exp = [(i/total_sum)*100 for i in sorted(eig_vals, reverse=True)]
+cum_var_exp = np.cumsum(var_exp)
+print(f'var_exp => {var_exp}') # Porcentaje de informacion valiosa que cada columna aporta al dataset
+print(f'cum_var_exp => {cum_var_exp}') # suma acumulada
+
+plot1 = ir.Bar(x=['CP %s'%i for i in range(1,5)], y=var_exp, showlegend=False)
+plot2 = ir.Scatter(x=['CP %s'%i for i in range(1,5)], y=cum_var_exp, showlegend=True, name="% de Varianza Explicada Acumulada")
+
+data = ir.Data([plot1, plot2])
+layout = ir.Layout(xaxis=ir.XAxis(title='Componentes principales'), yaxis=ir.YAxis(title='Porcentaje de varianza explicada'), title='Porcentaje de variabilidad explicada por cada componente principal')
+
+fig = ir.Figure(data=data, layout=layout)
+fig.show()
+
+# Point 4
+W = np.hstack((eigen_pairs[0][1].reshape(4,1), eigen_pairs[1][1].reshape(4,1)))
+print(f'W => {W}')
