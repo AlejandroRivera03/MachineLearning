@@ -17,7 +17,7 @@ from sklearn.preprocessing import StandardScaler
 df = pd.read_csv('./datasets/iris/iris.csv')
 
 X = df.iloc[:,0:4].values
-Y = df.iloc[:,4].values
+y = df.iloc[:,4].values
 
 # traces = []
 # legend = {0:True, 1:True, 2:True, 3:True}
@@ -26,7 +26,7 @@ Y = df.iloc[:,4].values
 
 # for col in range(4):
 #     for key in colors:
-#         traces.append(ir.Histogram(x=X[Y==key, col], opacity=0.7, xaxis="x%s"%(col+1), marker=ir.Marker(color=colors[key]), name=key, showlegend=legend[col]))
+#         traces.append(ir.Histogram(x=X[y==key, col], opacity=0.7, xaxis="x%s"%(col+1), marker=ir.Marker(color=colors[key]), name=key, showlegend=legend[col]))
 #     legend = {0:False, 1:False, 2:False, 3:False}
 
 # data = ir.Data(traces)
@@ -51,7 +51,7 @@ colors = {'setosa': 'rgb(255,0,0)', 'versicolor': 'rgb(0,255,0)', 'virginica': '
 
 for col in range(4):
     for key in colors:
-        traces.append(ir.Histogram(x=X_std[Y==key, col], opacity=0.7, xaxis="x%s"%(col+1), marker=ir.Marker(color=colors[key]), name=key, showlegend=legend[col]))
+        traces.append(ir.Histogram(x=X_std[y==key, col], opacity=0.7, xaxis="x%s"%(col+1), marker=ir.Marker(color=colors[key]), name=key, showlegend=legend[col]))
     legend = {0:False, 1:False, 2:False, 3:False}
 
 data = ir.Data(traces)
@@ -101,12 +101,12 @@ print(f'v =>\n{v}')
 for ev in eig_vectors:
     print(f'La longitud del VP es: {np.linalg.norm(ev)}')
 
-eigen_pairs = [(np.abs(eig_vals[i]), eig_vectors[:i]) for i in range(len(eig_vals))]
+eigen_pairs = [(np.abs(eig_vals[i]), eig_vectors[:,i]) for i in range(len(eig_vals))]
 eigen_pairs.sort()
 eigen_pairs.reverse()
 print(f'eigen_pairs =>\n{eigen_pairs}')
 
-print('Valores propis en orden descendente:')
+print('Valores propios en orden descendente:')
 for ep in eigen_pairs:
     print(ep[0])
 
@@ -126,5 +126,21 @@ fig = ir.Figure(data=data, layout=layout)
 fig.show()
 
 # Point 4
-W = np.hstack((eigen_pairs[0][1].reshape(4,1), eigen_pairs[1][1].reshape(4,1)))
+W = np.hstack((eigen_pairs[0][1].reshape(4,1), eigen_pairs[1][1].reshape(4,1))) # Getting first 2 columns (first represents 74% and the second one 22% (96% aprox))
 print(f'W => {W}')
+
+# Point 5
+Y = X_std.dot(W)
+print(f'Y =>\n{Y}')
+
+results = []
+
+for name in ('setosa', 'versicolor', 'virginica'):
+    result = ir.Scatter(x=Y[y==name, 0], y=Y[y==name, 1], mode='markers', name=name, marker=ir.Marker(size=12, line=ir.Line(color='rgba(220, 220, 220, 0.15)', width=0.5), opacity=0.8))
+    results.append(result)
+
+data = ir.Data(results)
+layout = ir.Layout(showlegend=True, scene=ir.layout.Scene(xaxis=ir.XAxis(title='Componente Principal 1'), yaxis=ir.YAxis(title='Componente Principal 2')))
+
+fig = ir.Figure(data=data, layout=layout)
+fig.show()
